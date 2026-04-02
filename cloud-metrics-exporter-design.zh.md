@@ -792,7 +792,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: exporter
-          image: ghcr.io/tennix/cloud-metrics-exporter:ack-node-role
+          image: ghcr.io/tennix/cloud-metrics-exporter:sha-<short-git-hash>
           ports:
             - name: metrics
               containerPort: 9100

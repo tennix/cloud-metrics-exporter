@@ -56,7 +56,6 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter
           tags: |
-            type=raw,value=ack-node-role
             type=raw,value=sha-${{ steps.vars.outputs.short_sha }}
 
       - name: Build and push image
@@ -75,7 +74,6 @@ jobs:
             echo "## Published image"
             echo
             echo "- Image: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter"
-            echo "- Mutable tag: ack-node-role"
-            echo "- Immutable tag: sha-${{ steps.vars.outputs.short_sha }}"
+            echo "- Tag: sha-${{ steps.vars.outputs.short_sha }}"
             echo "- Digest: ${{ steps.push.outputs.digest }}"
           } >> "$GITHUB_STEP_SUMMARY"
