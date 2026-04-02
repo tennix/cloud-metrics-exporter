@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-metrics-exporter
+  namespace: monitoring
+data:
+  config.yaml: |
+    providers:
+      - name: aliyun
+        enabled: true
+        regions:
+          - cn-hangzhou
+        metricTypes:
+          - disk
+          - network
+    discovery:
+      nodeRefreshInterval: 60s
+    scrape:
+      interval: 60s
+      timeout: 30s

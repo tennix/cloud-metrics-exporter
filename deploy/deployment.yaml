@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-metrics-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app: cloud-metrics-exporter
+    spec:
+      serviceAccountName: cloud-metrics-exporter
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: exporter
+          image: ghcr.io/tennix/cloud-metrics-exporter:ack-node-role
+          imagePullPolicy: Always
+          args:
+            - -config=/config/config.yaml
+          ports:
+            - name: metrics
+              containerPort: 9100
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: cloud-metrics-exporter
