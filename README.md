@@ -9,6 +9,13 @@ go test ./...
 go build ./cmd/cloud-metrics-exporter
 ```
 
+## GitHub Actions
+
+- `CI` runs on pull requests to `main` and validates `go test`, binary build, and Docker packaging.
+- `CD` runs on pushes to `main` and publishes the container image to GHCR as:
+  - `ghcr.io/<owner>/cloud-metrics-exporter:ack-node-role`
+  - `ghcr.io/<owner>/cloud-metrics-exporter:sha-<commit>`
+
 ## Runtime config
 
 The sample config lives at `configs/config.yaml` and is mounted to `/config/config.yaml` in the Kubernetes Deployment.

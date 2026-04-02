@@ -1,0 +1,11 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  verify:
+    uses: ./.github/workflows/_verify.yml
