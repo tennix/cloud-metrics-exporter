@@ -18,7 +18,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: exporter
-          image: ghcr.io/tennix/cloud-metrics-exporter:sha-<short-git-hash>
+          image: ghcr.io/tennix/cloud-metrics-exporter:<short-git-hash>
           imagePullPolicy: Always
           args:
             - -config=/config/config.yaml

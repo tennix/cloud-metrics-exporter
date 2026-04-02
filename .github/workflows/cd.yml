@@ -56,7 +56,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter
           tags: |
-            type=raw,value=sha-${{ steps.vars.outputs.short_sha }}
+            type=raw,value=${{ steps.vars.outputs.short_sha }}
 
       - name: Build and push image
         id: push
@@ -74,6 +74,6 @@ jobs:
             echo "## Published image"
             echo
             echo "- Image: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter"
-            echo "- Tag: sha-${{ steps.vars.outputs.short_sha }}"
+            echo "- Tag: ${{ steps.vars.outputs.short_sha }}"
             echo "- Digest: ${{ steps.push.outputs.digest }}"
           } >> "$GITHUB_STEP_SUMMARY"

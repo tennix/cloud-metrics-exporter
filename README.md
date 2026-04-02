@@ -13,12 +13,12 @@ go build ./cmd/cloud-metrics-exporter
 
 - `CI` runs on pull requests to `main` and validates `go test`, binary build, and Docker packaging.
 - `CD` runs on pushes to `main` and publishes the container image to GHCR as:
-  - `ghcr.io/<owner>/cloud-metrics-exporter:sha-<short-git-hash>`
+  - `ghcr.io/<owner>/cloud-metrics-exporter:<short-git-hash>`
 
 ## Image tag strategy
 
 - Published images use immutable short-SHA tags only.
-- Update `deploy/deployment.yaml` with the desired published `sha-<commit>` tag before deploying.
+- Update `deploy/deployment.yaml` with the desired published short git hash before deploying.
 
 ## Runtime config
 

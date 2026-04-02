@@ -257,7 +257,7 @@ The current manifest uses:
 
 - `serviceAccountName: cloud-metrics-exporter`
 - `imagePullSecrets: [ghcr-pull-secret]`
-- image: `ghcr.io/tennix/cloud-metrics-exporter:sha-<short-git-hash>`
+- image: `ghcr.io/tennix/cloud-metrics-exporter:<short-git-hash>`
 - fixed metrics port `9100`
 
 ### 7.2 RBAC
