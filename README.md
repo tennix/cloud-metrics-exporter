@@ -13,7 +13,7 @@ go build ./cmd/cloud-metrics-exporter
 
 - `CI` runs on pull requests to `main` and validates `go test`, binary build, and Docker packaging.
 - `CD` runs on pushes to `main` and publishes the container image to GHCR as:
-  - `ghcr.io/<owner>/cloud-metrics-exporter:sha-<commit>`
+  - `ghcr.io/<owner>/cloud-metrics-exporter:sha-<short-git-hash>`
 
 ## Image tag strategy
 
