@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cloud-metrics-exporter.fullname" . }}
+  namespace: {{ include "cloud-metrics-exporter.namespace" . }}
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/name: {{ include "cloud-metrics-exporter.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    app: "{{ .Values.appLabel }}"
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Values.appLabel }}
+  ports:
+    - name: {{ .Values.service.portName }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.portName }}

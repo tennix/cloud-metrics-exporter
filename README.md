@@ -37,6 +37,14 @@ kubectl apply -f deploy/deployment.yaml
 kubectl apply -f deploy/service.yaml
 ```
 
+## Helm chart
+
+An equivalent Helm chart lives at `deploy/helm/cloud-metrics-exporter/`.
+
+```bash
+helm upgrade --install cloud-metrics-exporter deploy/helm/cloud-metrics-exporter --namespace monitoring --create-namespace
+```
+
 ## Phase 1 validation
 
 - verify the exporter can resolve RRSA or node-role credentials in ACK
