@@ -1,0 +1,47 @@
+namespaceOverride: monitoring
+nameOverride: ""
+fullnameOverride: cloud-metrics-exporter
+appLabel: cloud-metrics-exporter
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/tennix/cloud-metrics-exporter
+  tag: "<short-git-hash>"
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  name: cloud-metrics-exporter
+
+rbac:
+  create: true
+
+service:
+  type: ClusterIP
+  portName: metrics
+  port: 9100
+
+podSecurityContext: {}
+
+containerSecurityContext: {}
+
+config:
+  content: |-
+    providers:
+      - name: aliyun
+        enabled: true
+        regions:
+          - cn-hangzhou
+        metricTypes:
+          - disk
+          - network
+
+    discovery:
+      nodeRefreshInterval: 60s
+
+    scrape:
+      interval: 60s
+      timeout: 30s
