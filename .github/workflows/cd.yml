@@ -2,68 +2,79 @@ name: CD
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
-concurrency:
-  group: cd-main
-  cancel-in-progress: true
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  verify:
-    uses: ./.github/workflows/_verify.yml
-
   publish-image:
-    needs: verify
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    env:
+      SHOULD_PUSH: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Compute short SHA
-        id: vars
-        run: echo "short_sha=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
 
-      - name: Docker metadata
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ steps.vars.outputs.short_sha }}
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
+            type=raw,value=latest,enable=${{ env.SHOULD_PUSH }}
+          labels: |
+            org.opencontainers.image.title=cloud-metrics-exporter
+            org.opencontainers.image.description=Kubernetes cloud metrics exporter with Prometheus output
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
       - name: Build and push image
         id: push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
+          file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ env.SHOULD_PUSH }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Publish summary
         run: |
           {
             echo "## Published image"
             echo
-            echo "- Image: ghcr.io/${{ github.repository_owner }}/cloud-metrics-exporter"
-            echo "- Tag: ${{ steps.vars.outputs.short_sha }}"
+            echo "- Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+            echo "- Tags:"
+            echo '${{ steps.meta.outputs.tags }}' | sed 's/^/- /'
             echo "- Platforms: linux/amd64, linux/arm64"
+            echo "- Pushed: ${{ env.SHOULD_PUSH }}"
             echo "- Digest: ${{ steps.push.outputs.digest }}"
           } >> "$GITHUB_STEP_SUMMARY"
