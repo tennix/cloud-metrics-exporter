@@ -16,15 +16,9 @@ Cloud-provider metrics are often exposed outside direct Kubernetes workload cont
 
 This project narrows collection to the nodes that actually belong to the current Kubernetes cluster and enriches disk metrics with Kubernetes labels such as `pv`, `pvc`, `pod`, and workload metadata.
 
-## Current scope
+## Design
 
-Phase 1 is an Aliyun-only MVP.
-
-- Node discovery comes from `node.spec.providerID`.
-- Metrics currently cover cloud disk and instance network data.
-- Disk metrics can be enriched with PV / PVC / Pod / workload context.
-- Authentication is designed for RRSA or ACK node-role credentials.
-- CPU, memory, load balancer metrics, and other cloud providers are not implemented in Phase 1.
+The implementation design and current architecture are documented in `docs/design.md`.
 
 ## Local build
 
@@ -32,17 +26,6 @@ Phase 1 is an Aliyun-only MVP.
 go test ./...
 go build ./cmd/cloud-metrics-exporter
 ```
-
-## GitHub Actions
-
-- `CI` runs on pull requests to `main` and validates `go test`, binary build, and Docker packaging.
-- `CD` runs on pushes to `main` and publishes the container image to GHCR as:
-  - `ghcr.io/<owner>/cloud-metrics-exporter:<short-git-hash>`
-
-## Image tag strategy
-
-- Published images use immutable short-SHA tags only.
-- Update `deploy/deployment.yaml` with the desired published short git hash before deploying.
 
 ## Runtime config
 
@@ -69,9 +52,9 @@ An equivalent Helm chart lives at `deploy/helm/cloud-metrics-exporter/`.
 helm upgrade --install cloud-metrics-exporter deploy/helm/cloud-metrics-exporter --namespace monitoring --create-namespace
 ```
 
-## Phase 1 validation
+## TODO
 
-- verify the exporter can resolve RRSA or node-role credentials in ACK
-- verify the pod can read Kubernetes `nodes`
-- verify `/metrics` is reachable on port `9100`
-- verify the exporter exposes only semantically correct standard metrics plus raw fallback metrics when needed
+- Add support for additional cloud providers behind the existing provider boundary.
+- Expand metric coverage beyond disk and instance network metrics.
+- Add load balancer metrics with Kubernetes service context where practical.
+- Improve deployment options beyond the current single-replica baseline.
